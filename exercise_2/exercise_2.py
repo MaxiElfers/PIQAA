@@ -1,14 +1,14 @@
 def donuts(count):
-    # +++your code here+++
-    return
+    try:
+        type(count) == int
+        if count < 10:
+            return 'Number of donuts: ' + str(count)
+        else:
+            return 'Number of donuts: many'
+    except:
+        return 'Not a valid number'
 
-# verbing
-# Given a string, if its length is at least 3,
-# add 'ing' to its end.
-# Unless it already ends in 'ing', in which case
-# add 'ly' instead.
-# If the string length is less than 3, leave it unchanged.
-# Return the resulting string.
+
 def verbing(s):
     # error handling
     if type(s) != str:
@@ -23,8 +23,10 @@ def verbing(s):
     return s
 
 def remove_adjacent(nums):
-    # +++your code here+++
-    return
+    if len(nums) == 0:
+        return 'Empty Array provided'
+    else:
+        return
 
 def main():
     print('donuts')
@@ -38,8 +40,8 @@ def main():
     print(verbing('hail'))
     print(verbing('swiming'))
     print(verbing('do'))
-    print('remove_adjacent')
 
+    print('remove_adjacent')
     print(remove_adjacent([1, 2, 2, 3]))
     print(remove_adjacent([2, 2, 3, 3, 3]))
     print(remove_adjacent([]))
