@@ -2,9 +2,11 @@ from qgis.core import QgsProject, QgsVectorLayer
 
 # Get the selected feature from the Schools layer
 layer = QgsProject.instance().mapLayersByName('Schools')[0]
+# Get the features of the layer
 selected_features = layer.selectedFeatures()
 
-csv_path = '/Users/melfers/Desktop/SchoolReport.csv'
+# Path to the CSV file
+csv_path = 'enter_your_path_here/SchoolReport.csv' # Please change the path
 with open(csv_path, 'w') as csv_file:
     csv_file.write("Name;X;Y\n")
 
