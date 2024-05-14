@@ -26,7 +26,6 @@ if "Change Attribute Values" in capabilities:
 district = QgsField('district', QVariant.String, len = 50)
 provider.addAttributes([district])
 poolLayer.updateFields()
-poolLayer = QgsProject.instance().mapLayersByName('public_swimming_pools')[0]
 
 # intersect with schools
 districtLayer = QgsProject.instance().mapLayersByName('Muenster_City_Districts')[0]
