@@ -292,6 +292,9 @@ class ccdpAlgorithm(QgsProcessingAlgorithm):
         # Add map image
         c.drawImage(self.mapPath, 80, 200, 200, 200)
         
+        os.remove(self.mapPath)
+        os.remove(self.chartPath)
+        
         c.save()
 
     def processAlgorithm(self, parameters, context, feedback):
