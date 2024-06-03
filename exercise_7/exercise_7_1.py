@@ -283,7 +283,7 @@ class ccdpAlgorithm(QgsProcessingAlgorithm):
             c.drawString(50, 620, f"No {sop_array} in this district")
         else:
             c.drawString(50, 620, f"Number of {sop_array}: {district_schools_or_pools}")
-            c.drawImage(self.chartPath, 320, 200, 200, 200)
+            c.drawImage(self.chartPath, 320, 200, 250, 200)
             
             
         # Add a line below the title for emphasis
