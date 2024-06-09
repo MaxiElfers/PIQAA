@@ -23,9 +23,14 @@
 """
 
 import os
+import time
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.utils import iface
+
+from qgis.core import QgsProject
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -33,6 +38,10 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
+
+    # Set paths
+    mapPath = "C:/Users/he-lu/OneDrive/Bilder/district_extent.png"
+
     def __init__(self, parent=None):
         """Constructor."""
         super(MuensterCityDistrictToolDialog, self).__init__(parent)
@@ -42,3 +51,124 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+        self.btnGetData.clicked.connect(self.getDataButton)
+        self.btnExportData.clicked.connect(self.exportDataButton)
+
+    def getDataButton(self):
+        selected_features = self.getSelectedCityDistrict()
+        if self.checkFeatureCount(selected_features):
+            information_array = self.createInformationArray(selected_features[0])
+            QMessageBox.information(self, "Selected Feature for data dialog", str(information_array))
+            # TODO open data dialog
+        self.close()
+
+    def exportDataButton(self):
+        selected_features = self.getSelectedCityDistrict()
+        if self.checkFeatureCount(selected_features):
+            information_array = self.createInformationArray(selected_features[0])
+            QMessageBox.information(self, "Selected Feature for export dialog", str(information_array))
+            # TODO open export dialog
+        self.close()
+
+    
+
+    # helper functions ---------------------------------------------------------------------------------------------
+
+    def getSelectedCityDistrict(self):
+        # Get the selected features
+        city_districts = QgsProject.instance().mapLayersByName('Muenster_City_Districts')[0]
+        selected_features = city_districts.selectedFeatures()
+        return selected_features
+    
+    def checkFeatureCount(self, selected_features):
+        if len(selected_features) == 1:
+            return True
+        else:
+            # Output error message in QMessageBox
+            QMessageBox.critical(self, "Error", "Please select exactly one feature.")
+            return False
+        
+    def checkGeometryWithinDistrict(self, district, featu):
+        
+        if featu is not None:
+            # set variables
+            amount_in_district = 0
+            feature_ids = []
+            
+            for feat in featu.getFeatures():
+                # get geometry of feature
+                feat_geom = feat.geometry() 
+                # get geometry of districts
+                district_geom = district.geometry()
+                
+                # check if it is within the district
+                if feat_geom.within(district_geom): 
+                    feature_ids.append(feat.id())
+                    if 'Number' in feat: 
+                        amount_in_district += int(feat['Number'])
+                    else:
+                        amount_in_district += 1
+            
+            # selects all features within; used in the creation of the charts
+            featu.selectByIds(feature_ids)
+            return amount_in_district # return the amount of features in the given district 
+            
+            
+        else:
+            # error handling
+            QMessageBox.information(self, "Warning", "No features in district found!")
+            return
+            
+    
+    def getDistrictArea(self, district):
+        # returns the area in m2 of the given district
+        return district.geometry().area() 
+    
+    def getHousholdsInDistrict(self, district):
+        # Load House_Number layer from TOC
+        house_numbers = QgsProject.instance().mapLayersByName('House_Numbers')[0]  
+        return self.checkGeometryWithinDistrict(district, house_numbers)
+            
+    def getParcelsInDistrict(self, district):
+        # Load Muenster_Parcels layer from TOC
+        muenster_parcels = QgsProject.instance().mapLayersByName('Muenster_Parcels')[0] 
+        return self.checkGeometryWithinDistrict(district, muenster_parcels)
+            
+    def getPoolsInDistrict(self, district, school_pool):
+        # Load public_swimming_pools layer from TOC
+        pools = QgsProject.instance().mapLayersByName('public_swimming_pools')[0] 
+        count = self.checkGeometryWithinDistrict(district, pools)
+        return (count, "Pools")
+        
+    def getSchoolsInDistrict(self, district, school_pool):
+        # Load Schools layer from TOC
+        schools = QgsProject.instance().mapLayersByName('Schools')[0] 
+        count = self.checkGeometryWithinDistrict(district, schools)
+        return (count, "Schools")
+    
+    def getMapImage(self, district):
+
+        # Get the extent of the district geometry
+        extent = district.geometry().boundingBox()
+        # Set the map canvas extent
+        iface.mapCanvas().setExtent(extent)
+        # Refresh the map canvas
+        iface.mapCanvas().refresh()
+        # Create time buffer for the refresh
+        time.sleep(10)
+        # Save map as Image
+        iface.mapCanvas().saveAsImage(self.mapPath)
+
+    def createInformationArray(self, district):
+        # Create the map image
+        self.getMapImage(district)
+        # Create an array with the information
+        return [district['Name'], 
+                district['P_District'], 
+                self.getDistrictArea(district), 
+                self.getHousholdsInDistrict(district), 
+                self.getParcelsInDistrict(district), 
+                self.getSchoolsInDistrict(district, 0), 
+                self.getPoolsInDistrict(district, 1)]
+    
