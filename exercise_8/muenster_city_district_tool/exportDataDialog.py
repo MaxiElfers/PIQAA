@@ -66,27 +66,27 @@ class Ui_Dialog_export(object):
     # Functionality for the export PDF button
     def exportPDF(self):
         dInfo = DistrictInfo()
-        selected_features = dInfo.getSelectedCityDistrict()
-        if dInfo.checkFeatureCount(selected_features, self.window):
-            directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly)
-            information_array = self.createInformationArray(selected_features[0], dInfo)
-            print = PDFprint()
-            print.setData(information_array)
-            print.createPDF(selected_features[0], (directory + "/district_profile.pdf"))
+        selected_features = dInfo.getSelectedCityDistrict() # get selected features
+        if dInfo.checkFeatureCount(selected_features, self.window): # check if only one feature is selected
+            directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly) # let the user input a directory
+            information_array = self.createInformationArray(selected_features[0], dInfo) # create the array with the information about the selected feature
+            print = PDFprint() # create a new PDFprint object
+            print.setData(information_array) # set the data for the PDF
+            print.createPDF(selected_features[0], (directory + "/district_profile.pdf")) # create the PDF
 
     # Functionality for the export CSV button
     def exportCSV(self):
         dInfo = DistrictInfo()
-        selected_features = dInfo.getSelectedCityDistrict()
-        directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly)
-        with open(directory + "/selected_features.csv", 'w', newline='') as csvfile:
-            fieldnames = ['Name', 'P_District', 'Area', 'Households', 'Parcels', 'Schools', 'Pools']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        selected_features = dInfo.getSelectedCityDistrict() # get selected features
+        directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly) # let the user input a directory
+        with open(directory + "/selected_features.csv", 'w', newline='') as csvfile: # start the creation of the CSV file
+            fieldnames = ['Name', 'P_District', 'Area', 'Households', 'Parcels', 'Schools', 'Pools'] # set the headers
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # create the writer
 
-            writer.writeheader()
-            for feature in selected_features:
-                information_array = self.createInformationArray(feature, dInfo)
-                writer.writerow({
+            writer.writeheader() 
+            for feature in selected_features: # iterate over the selected features
+                information_array = self.createInformationArray(feature, dInfo) # create the array with the information about the selected feature
+                writer.writerow({ # fill the rows of the CSV
                     'Name': information_array[0],
                     'P_District': information_array[1],
                     'Area': information_array[2],
@@ -98,6 +98,7 @@ class Ui_Dialog_export(object):
 
     def createInformationArray(self, district, dInfo):
         # Create an array with the information
+        # This is done with the help of the DistrictInfo class
         return [district['Name'], 
                 district['P_District'], 
                 dInfo.getDistrictArea(district), 

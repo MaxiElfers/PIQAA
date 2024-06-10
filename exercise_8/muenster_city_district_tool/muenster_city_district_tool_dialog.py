@@ -43,9 +43,6 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
 
-    # Set paths
-    mapPath = "C:/Users/he-lu/OneDrive/Bilder/district_extent.png"
-
     def __init__(self, parent=None):
         """Constructor."""
         super(MuensterCityDistrictToolDialog, self).__init__(parent)
@@ -56,6 +53,7 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
+        # Create the event listeners for the buttons
         self.btnGetData.clicked.connect(self.getDataButton)
         self.btnExportData.clicked.connect(self.exportDataButton)
 
@@ -63,11 +61,11 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
         dInfo = DistrictInfo()
         getDataDialog = QtWidgets.QDialog()
         ui = Ui_Dialog_get()
-        ui.setupUi(getDataDialog)
-        selected_features = dInfo.getSelectedCityDistrict()
-        if dInfo.checkFeatureCount(selected_features, self):
-            information_array = self.createInformationArray(selected_features[0], dInfo)
-            ui.fillInputField(information_array)
+        ui.setupUi(getDataDialog) # Create UI for the Dialog
+        selected_features = dInfo.getSelectedCityDistrict() # Get the selected city district
+        if dInfo.checkFeatureCount(selected_features, self): # Check if only one city district is selected
+            information_array = self.createInformationArray(selected_features[0], dInfo) # create the information array
+            ui.fillInputField(information_array) # Fill the input fields with the information
             getDataDialog.exec_()
         self.close()
 
@@ -75,12 +73,13 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
         exportDataDialog = QtWidgets.QDialog()
         ui = Ui_Dialog_export()
         ui.window = self
-        ui.setupUi(exportDataDialog)
+        ui.setupUi(exportDataDialog) # Create UI for the Dialog
         exportDataDialog.exec_()
         self.close()
 
     def createInformationArray(self, district, dInfo):
         # Create an array with the information
+        # This is done with the help of the DistrictInfo class
         return [district['Name'], 
                 district['P_District'], 
                 dInfo.getDistrictArea(district), 

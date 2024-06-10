@@ -1,10 +1,13 @@
 from qgis.core import QgsProject
 from PyQt5.QtWidgets import QMessageBox
 
+# Class that contains all classes to get the information of the selected feature
 class DistrictInfo:
+
     def __init__(self):
         pass
 
+    # Check if the feature is within the district
     def checkGeometryWithinDistrict(self, district, featu):
         if featu is not None:
             # set variables
@@ -28,7 +31,6 @@ class DistrictInfo:
             # selects all features within; used in the creation of the charts
             featu.selectByIds(feature_ids)
             return amount_in_district # return the amount of features in the given district 
-            
             
         else:
             # error handling
@@ -62,15 +64,16 @@ class DistrictInfo:
         return (count, "Schools")
 
     def checkFeatureCount(self, selected_features, window):
+        # Check if the amount of selected features is exactly one (needed for everything exept the CSV output)
         if len(selected_features) == 1:
             return True
         else:
             # Output error message in QMessageBox
-            QMessageBox.critical(window, "Error", "Please select exactly one feature.")
+            QMessageBox.critical(window, "Error", "Please select exactly one feature.") # window is the main class of the muenster_city_district_tool_dialog.py
             return False
 
     def getSelectedCityDistrict(self):
         # Get the selected features
         city_districts = QgsProject.instance().mapLayersByName('Muenster_City_Districts')[0]
         selected_features = city_districts.selectedFeatures()
-        return selected_features
+        return selected_features # Returnst the features that are selected

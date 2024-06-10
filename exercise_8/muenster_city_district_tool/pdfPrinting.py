@@ -6,13 +6,13 @@ from reportlab.lib.units import inch
 from qgis.utils import iface
 import time
 import os
-from .selectedFeatureInfoClass import DistrictInfo
 
 class PDFprint:
 
     district_name, district_parent_name, district_size, district_housholds, district_parcels, district_schools, district_pools = "", "", "", "", "", "", ""
     mapPath = ""
 
+    # Setter for all data fields using an array that contains the information
     def setData(self, information_array):
         self.district_name = str(information_array[0])
         self.district_parent_name = str(information_array[1])
@@ -22,6 +22,7 @@ class PDFprint:
         self.district_schools = str(information_array[5][0])
         self.district_pools = str(information_array[6][0])
 
+    # Function to get the map image of the district
     def getMapImage(self, district):
         # Get the extent of the district geometry
         extent = district.geometry().boundingBox()
@@ -35,12 +36,12 @@ class PDFprint:
         iface.mapCanvas().saveAsImage(self.mapPath)
 
     def createPDF(self, district_feat, pdf_output):
-        dInfo = DistrictInfo()
+        # Set the path of the map image
         self.mapPath = pdf_output
-
         
         self.getMapImage(district_feat) # Create the map image 
         
+        # Start the canvas
         c = canvas.Canvas(pdf_output, pagesize=letter)
     
         # Set title
@@ -55,13 +56,13 @@ class PDFprint:
         c.drawString(50, 640, f"Number of Parcels: {self.district_parcels}")
     
         # Number of schools
-        if self.district_schools == 0:
+        if self.district_schools == "0":
             c.drawString(50, 620, f"No Schools in this district")
         else:
             c.drawString(50, 620, f"Number of Schools: {self.district_schools}")
         
         # Number of pools
-        if self.district_pools == 0:
+        if self.district_pools == "0":
             c.drawString(50, 600, f"No Pools in this district")
         else:
             c.drawString(50, 600, f"Number of Pools: {self.district_pools}")
@@ -73,6 +74,8 @@ class PDFprint:
         # Add map image
         c.drawImage(self.mapPath, 80, 200, 200, 200)
         
+        # Delete the map image after it has been added to the PDF
         os.remove(self.mapPath)
         
+        # Save the PDF
         c.save()
