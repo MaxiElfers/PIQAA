@@ -67,7 +67,6 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
             information_array = self.createInformationArray(selected_features[0], dInfo) # create the information array
             ui.fillInputField(information_array) # Fill the input fields with the information
             getDataDialog.exec_()
-        self.close()
 
     def exportDataButton(self):
         exportDataDialog = QtWidgets.QDialog()
@@ -75,7 +74,6 @@ class MuensterCityDistrictToolDialog(QtWidgets.QDialog, FORM_CLASS):
         ui.window = self
         ui.setupUi(exportDataDialog) # Create UI for the Dialog
         exportDataDialog.exec_()
-        self.close()
 
     def createInformationArray(self, district, dInfo):
         # Create an array with the information
