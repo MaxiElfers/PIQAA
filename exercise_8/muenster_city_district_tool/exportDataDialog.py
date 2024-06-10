@@ -9,9 +9,16 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from qgis.PyQt.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog
+from .selectedFeatureInfoClass import DistrictInfo
+from .pdfPrinting import PDFprint
+import csv
 
+class Ui_Dialog_export(object):
 
-class Ui_Dialog(object):
+    window = None
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(554, 457)
@@ -39,6 +46,13 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        # Add close functionality to the OK button
+        self.btnPDF.clicked.connect(self.exportPDF)
+        self.btnCSV.clicked.connect(self.exportCSV)
+
+        # Add close functionality to the OK button
+        self.btnOK.clicked.connect(Dialog.close)
+
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
@@ -48,3 +62,46 @@ class Ui_Dialog(object):
         self.btnCSV.setText(_translate("Dialog", "Export als *.csv"))
         self.label_2.setText(_translate("Dialog", "Die Werte der selektierten Feature werden in eine *.csv exportiert. Bitte geben Sie hirzu noch einen Ausgabepfad an."))
         self.btnOK.setText(_translate("Dialog", "OK"))
+
+    # Functionality for the export PDF button
+    def exportPDF(self):
+        dInfo = DistrictInfo()
+        selected_features = dInfo.getSelectedCityDistrict()
+        if dInfo.checkFeatureCount(selected_features, self.window):
+            directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly)
+            information_array = self.createInformationArray(selected_features[0], dInfo)
+            print = PDFprint()
+            print.setData(information_array)
+            print.createPDF(selected_features[0], (directory + "/district_profile.pdf"))
+
+    # Functionality for the export CSV button
+    def exportCSV(self):
+        dInfo = DistrictInfo()
+        selected_features = dInfo.getSelectedCityDistrict()
+        directory = QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QFileDialog.ShowDirsOnly)
+        with open(directory + "/selected_features.csv", 'w', newline='') as csvfile:
+            fieldnames = ['Name', 'P_District', 'Area', 'Households', 'Parcels', 'Schools', 'Pools']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for feature in selected_features:
+                information_array = self.createInformationArray(feature, dInfo)
+                writer.writerow({
+                    'Name': information_array[0],
+                    'P_District': information_array[1],
+                    'Area': information_array[2],
+                    'Households': information_array[3],
+                    'Parcels': information_array[4],
+                    'Schools': information_array[5][0],
+                    'Pools': information_array[6][0]
+                })
+
+    def createInformationArray(self, district, dInfo):
+        # Create an array with the information
+        return [district['Name'], 
+                district['P_District'], 
+                dInfo.getDistrictArea(district), 
+                dInfo.getHousholdsInDistrict(district), 
+                dInfo.getParcelsInDistrict(district), 
+                dInfo.getSchoolsInDistrict(district, 0), 
+                dInfo.getPoolsInDistrict(district, 1)]
