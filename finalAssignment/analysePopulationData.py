@@ -1,4 +1,7 @@
+
 import arcpy
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 def script_tool(green_space_fc, population_fc, min, max):
     
@@ -65,6 +68,30 @@ def printMessage(district_name, green_area, perPersonArea):
     arcpy.AddMessage(f"District: {district_name}, Green Area: {green_area:.2f} sq meters")
     arcpy.AddMessage(f"Green Area per Person: {perPersonArea:.2f} sq meters")
     arcpy.AddMessage("-----")
+
+# Create a PDF report
+def create_pdf(district_name, green_area, perPersonArea):
+    pdf_output_path = r"C:\Pfad\zu\deinem\Ordner\stadtteilbericht.pdf"
+
+    c = canvas.Canvas(output_path, pagesize=letter)
+    width, height = letter
+
+    # Set title and font
+    c.setTitle("Stadtteilbericht")
+    c.setFont("Helvetica", 12)
+
+    # Add city name
+    c.drawString(72, height - 100, f"Stadtteil: {district_name}")
+
+    # Add green area
+    c.drawString(72, height - 120, f"Grüne Fläche: {green_area:.2f} qm")
+
+    # Add green area per person
+    c.drawString(72, height - 140, f"Grüne Fläche pro Person: {perPersonArea:.2f} qm")
+
+    # Save the PDF
+    c.save()
+
 
 if __name__ == "__main__":
     # Inputs
