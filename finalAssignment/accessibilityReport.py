@@ -90,7 +90,7 @@ def export_pdf_layout(aprx, pdf_path, district_name, layout_name, green_area, po
             element.text = f"Population:\n{population}"
         elif "Per Person" in element.text:
             perPerson = green_area / population
-            element.text = f"Per Person Green Space::\n{perPerson:.2f} m2"
+            element.text = f"Per Person Green Space:\n{perPerson:.2f} m2"
         elif "Green Space" in element.text:
             element.text = f"Green Space:\n{green_area:.2f} m2"
             
