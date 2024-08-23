@@ -59,8 +59,8 @@ This Tool calculates the distance from a selected position on the map to the nea
 **Input Green Space ID Field:** The column name of the ID field of the **Green Space layer** <br>
 
 ### Output
-The output is a message in the tool console naming the distance as well as the selection of the nearest green space on the map.
-![Alt-Text](/demo_images/walkingDistanceDemo.png)
+The output is a message in the tool console naming the distance as well as the selection of the nearest green space on the map. <br>
+![Alt-Text](./images_demo/WalkingDistanceDemo.png)
 
 ### Idea of the Tool
 The user can find out what green space is nearest and get an idea of the distance.
@@ -82,7 +82,8 @@ This tool calculates the green space area and the per person green space area fo
 **Maximum sqaure meters per Person:** The maximum amount of per person green space area a district should have to be displayed <br>
 
 ### Output
-The output are messages in the tool console showing the (per person) green spaces area for each district that fits the criteria.
+The output are messages in the tool console showing the (per person) green spaces area for each district that fits the criteria. <br>
+![Alt-Text](./images_demo/AnalysePopulationDataDemo.png)
 
 ### Idea of the Tool
 The user can analyse the different distict based on per person green area space, as this can give idea of the amount of local recreation areas for each district.
@@ -106,6 +107,8 @@ This tool creates a PDF report about the selected district containing (per perso
 
 ### Output
 The output is a PDF file, as well as a heatmap that is loaded onto the map.
+![Alt-Text](./images_demo/AccessibilityReportDemo.png)
+![Alt-Text](./images_demo/HeatmapDemo.png)
 
 ### Idea of the Tool
 The user can create a accessibility report about a certain district for further use. The idea is to first use the **Analyse Population Data - Tool** to find a district that seems interesting and to then create a report about.
